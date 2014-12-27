@@ -1,0 +1,51 @@
+Względnie działający serwer. Żeby wejść trzeba podać nick, na razie nie bawimy się w żadne hasła.
+Po zalogowaniu pojawicie się w lobby, możecie tam chatować, sprawdzić utworzone gry lub dołączyć do istniejącej.
+Na razie można utworzyć jedynie jeden pokój o nazwie "test room", dorobienie dodatkowych nie będzie problem więc zróbmy tak żeby działało na tym jednym testowym.
+Po utworzeniu gry gracze pojawia się w gameroom, zwykły gracz może tylko wyjść, host może rozpocząć grę lub zmienić maksymalną liczbę graczy.
+Gdy gra się zaczyna host przechodzi do game i wysyła komunikat startgame do graczy, wtedy powinni oni przejść do gry - to musicie dodać.
+Gdy już gracze przejdą do gry host może rozpocząć grę wciskając przycisk "start game" jak wyśle się komunikat point lub collision przed
+tym to na razie poleci error. Sama klasa kolizji działa przynajmniej jeśli chodzi o testy można zniej korzystać ale narazie proponuje robienie
+bez niej zeby działało bez problemów na wykrywaniu kolizji tylko z javascript'u.
+Ja jako serwer podaje inny uzytkownikom tylko zmienne statnu ruchu  (choc nie do końca po podaje tez x, y stanu w którym się zmienił, komunikaty za chwile).
+
+Jeśli chodzi o komunikaty które wysyła serwer polecam zwracać uwagę tylko na pole type które określa typ komunikatu,
+trochę później dorobię ich lepszą formę bo teraz wszystkie dane lądują do pola text.
+
+Komunikaty:
+
+Do serwera:
+
+{type: "message", text: "Jakis text" } - wysyłanie wiadomości do wszystkich na chat’ie
+{type: refresh } - zapytanie o aktualna listę gier
+{type: "configuration", numberOfPlayers: "8", radius: "30" } - zmiana ustawień pokoju - wysyła host
+{type: "point", x: "5", y: "5" } - wysłanie punktu gdy przycisk został przyciśnięty lub zwolniony
+{type: "collision",
+ players:[
+    {username:"aaa", "x":"5", "y":"5"},
+    ...]
+} - sprawdzenie czy była kolizja na serwerze - w players podajecie mi wszystkich graczy z ich aktualnymi pozycjami
+{type: "start",
+ players:[
+    {username:"aaa", "x":"5", "y":"5"},
+    ...]
+} - rozpoczecie gry - w players podajecie mi wszystkich graczy z ich początkowymi pozycjami
+
+Od serwera:
+
+{type: "refresh" text: "Lista Gier" } - komunikat z lista gier
+{type: "talk", user: "username", text: "Jakis text" } - wiadomość na chat
+{type: "join", user: "username", text: "Jakis text" } - gracz dołączył do pokoju
+{type: "quit", user: "username", text: "Jakis text" } - gracz opuścił pokój lub zerwało mu połączenie z websocketem
+{type: "configuration", user: "username", text: "Nowe Ustawienia" } - wiadomość z ustawieniami pokoju
+{type: "startgame", user: "username", text: "Nie istotne" } - komunikat przejścia do pokoju gry
+{type: "leave", user: "username", text: "Nie istotne" } - gracz opuścił pokój (na pewno z własnej woli :) )
+{type: "start", user: "username", text: "Nie istotne" } - rozpoczęcie gry
+{type: "point", user: "username", text: "Nie istotne" } - dany gracz (username) przycisnął / zwolnił przycisk
+{type: "collision", user: "username", text: "Nie istotne" } – kolizja gracza username
+
+Do uruchomienia używam play frameworka 2.2.6
+
+Uwaga!
+Pamiętajcie aby zamknąć socket gdy będziecie przechodzić pomiędzy pokojami. 
+W pokojach są obecnie przyciski które wysyłają komunikaty, dodałem je tylko dla testów.
+Obecne html i javascript możecie modyfikować do woli, służył mi tylko do testów, jednak jeżeli chcecie zmienić nazwę plików to wymagane będzie modyfikacja na Sewerze.

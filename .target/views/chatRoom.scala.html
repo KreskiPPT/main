@@ -1,0 +1,56 @@
+@(username: String)
+
+@main(username) {
+    
+    <div class="page-header">
+        <h1>CHAT ROOM <small>You are chatting as @username</small></h1>
+    </div>
+    
+	@if(flash.containsKey("error")) {
+        
+        <div class="alert-message error">
+            <p>
+                <strong>Oops!</strong> @flash.get("error")
+            </p>
+        </div>
+        
+    }
+	
+    <div id="onError" class="alert-message error">
+        <p>
+            <strong>Oops!</strong> <span></span>
+        </p>
+    </div>
+    
+    <div id="onChat" class="row">
+        <div class="span10" id="main">
+            <div id="messages">
+            </div>
+            <textarea id="talk"></textarea>
+        </div>
+        <div class="span4">
+            <h2>Members</h2>
+            <ul id="members">
+            </ul>
+        </div>
+    </div>
+	
+	<div>
+		   <form action="@routes.Application.gameRoom()" class="pull-right">
+			  <button id="join" name="game" class="join" type="submit" value="Join">Join</button><br />
+			</form>
+			
+			<br />
+			
+			<form action="@routes.Application.gameRoom()" class="pull-right">
+			  <button id="create_game" name="game" class="create_game" type="submit" value="Create_Game">Create Game</button><br />
+			</form>
+			
+			<br />
+			
+			<button id="refresh" class="refresh" type="submit">Refresh</button><br />
+	</div>
+    
+    <script type="text/javascript" charset="utf-8" src="@routes.Application.chatRoomJs(username)"></script>
+    
+}

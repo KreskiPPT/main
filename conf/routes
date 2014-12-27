@@ -1,0 +1,21 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                                controllers.Application.index()
+GET		/disconnect						 controllers.Application.disconnect()
+POST	/login							 controllers.Application.loginSubmit()
+GET     /room                            controllers.Application.lobby()
+GET     /reroom                          controllers.Application.reLobby()
+GET     /room/chat                       controllers.Application.chat(username)
+GET     /assets/javascripts/chatroom.js  controllers.Application.lobbyJs(username)
+POST    /gameroom                        controllers.Application.gameRoom()
+GET     /assets/javascripts/gameroom.js  controllers.Application.gameRoomJs(username, host)
+GET     /gameroom/WS                     controllers.Application.gameRoomWS(username)
+GET     /game                            controllers.Application.game()
+GET     /assets/javascripts/game.js      controllers.Application.gameJs(username, host)
+GET     /game/WS                         controllers.Application.gameWS(username)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file                    controllers.Assets.at(path="/public", file)
