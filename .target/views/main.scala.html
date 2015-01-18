@@ -4,7 +4,7 @@
 
 <html>
     <head>
-        <title>Websocket Chat-Room</title>
+        <title>Kreski</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
@@ -15,15 +15,15 @@
         <div class="topbar">
             <div class="fill">
                 <div class="container">
-                    <a class="brand" href="@routes.Application.index()">Websocket Chat-Room</a>
+                    <a class="brand" href="@routes.Application.index()">Kreski</a>
                     
                     @if(connected != null) {
                         <p class="pull-right">
                             Logged in as @connected —
-                            <a href="@routes.Application.index()">Disconnect</a>
+                            <a href="@routes.Application.disconnect()">Disconnect</a>
                         </p>
                     } else {
-                        <form action="@routes.Application.chatRoom()" class="pull-right">
+                        <form action="@routes.Application.loginSubmit()" class="pull-right" method="post">
                             <input id="username" name="username" class="input-small" type="text" placeholder="Username">
                             <button class="btn" type="submit">Sign in</button>
                         </form>

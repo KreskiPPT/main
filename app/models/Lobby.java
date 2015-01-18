@@ -99,12 +99,12 @@ public class Lobby extends UntypedActor {
 
 			if(singin.contains(join.username)) {
 				members.put(join.username, join.channel);
-				notifyAll("join", join.username, "has entered the room");
+				notifyAll(JsonMessages.Join(join.username));
 				getSender().tell("OK", getSelf());
 			} else {
 				members.put(join.username, join.channel);
 				singin.add(join.username);
-				notifyAll("join", join.username, "has entered the room");
+				notifyAll(JsonMessages.Join(join.username));
 				getSender().tell("OK", getSelf());
 			}
 
@@ -114,7 +114,9 @@ public class Lobby extends UntypedActor {
 			Messages.Refresh refresh = (Messages.Refresh)message;
 			
 			int size = 0;
+			//ArrayList<String> games = new ArrayList<String>();
 			String games = "";
+			
 			for(Map.Entry<String, GameRoomData> entry: GameRoom.game_list.entrySet()) {
 				if(!entry.getValue().isFull()) {
 				  games+=entry.getKey()+";";
@@ -122,15 +124,16 @@ public class Lobby extends UntypedActor {
 				}
 			}
 			games = size+";"+games;
+		  //String[] table = null;
 			
-			sendJSON(refresh.username, "refresh", refresh.username, games);
+			sendJSON(refresh.username, JsonMessages.Refresh(refresh.username, games));
 
 		} else if(message instanceof Messages.Talk)  {
 
 			// Received a Talk message
 			Messages.Talk talk = (Messages.Talk)message;
 
-			notifyAll("talk", talk.username, talk.text);
+			notifyAll(JsonMessages.Talk(talk.username, talk.text));
 
 		} else if(message instanceof Messages.Quit)  {
 
@@ -139,14 +142,14 @@ public class Lobby extends UntypedActor {
 
 			members.remove(quit.username);
 
-			notifyAll("quit", quit.username, "has left the room");
+			notifyAll(JsonMessages.Quit(quit.username));
 
 		} else if(message instanceof Messages.Unknown)  {
 
 			// Received a Unknown message
 			Messages.Unknown unknown = (Messages.Unknown)message;
 			
-			sendJSON(unknown.username, "unknown", unknown.username, "unknown type: "+unknown.unknownType);
+			sendJSON(unknown.username, JsonMessages.Unknown("unknown type: "+unknown.unknownType));
 
 		} else {
 			unhandled(message);
@@ -155,13 +158,13 @@ public class Lobby extends UntypedActor {
 	}
 
 	// Send a Json event to all members
-	public void notifyAll(String kind, String user, String text) {
+	public void notifyAll(ObjectNode event) {
 		for(WebSocket.Out<JsonNode> channel: members.values()) {
 
-			ObjectNode event = Json.newObject();
+			/*ObjectNode event = Json.newObject();
 			event.put("type", kind);
 			event.put("user", user);
-			event.put("message", text);
+			event.put("message", text);*/
 
 			ArrayNode m = event.putArray("members");
 			for(String u: members.keySet()) {
@@ -172,18 +175,17 @@ public class Lobby extends UntypedActor {
 	}
 
 	// Send a Json to given member
-	public void sendJSON(String username, String kind, String user, String text) {
+	public void sendJSON(String username, ObjectNode event) {
 
-		ObjectNode event = Json.newObject();
+		/*ObjectNode event = Json.newObject();
 		event.put("type", kind);
 		event.put("user", user);
-		event.put("message", text);
+		event.put("message", text);*/
 
 		ArrayNode m = event.putArray("members");
 		for(String u: members.keySet()) {
 			m.add(u);
 		}
-
 
 		members.get(username).write(event);        
 	}    

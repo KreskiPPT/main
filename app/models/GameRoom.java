@@ -111,8 +111,8 @@ public class GameRoom extends UntypedActor {
 				String room = players.get(join.username);
 				int numberOfPlayers = ++game_list.get(room).numberOfPlayers;
 				
-				notifyAll("join", join.username, room, "has entered the room");
-				notifyAll("configuration", join.username, room, numberOfPlayers+" "+game_list.get(room).maxNumberOfPlayers);
+				notifyAll(JsonMessages.Join(join.username), room);
+				notifyAll(JsonMessages.Configuration(game_list.get(room)), room);
 				getSender().tell("OK", getSelf());
 			}
 
@@ -127,7 +127,7 @@ public class GameRoom extends UntypedActor {
 			if(roomhost != null && roomhost.equals(conf.username)) {
 				game_list.get(room).maxNumberOfPlayers=conf.maxNumberOfPlayers;
 				game_list.get(room).radius=conf.radius;
-				notifyAll("configuration", conf.username, room, game_list.get(room).numberOfPlayers+" "+game_list.get(room).maxNumberOfPlayers);
+				notifyAll(JsonMessages.Configuration(game_list.get(room)), room);
 			}
 
 		} else if(message instanceof Messages.StartGame)  {
@@ -148,7 +148,7 @@ public class GameRoom extends UntypedActor {
 				host.remove(start.roomname);
 				game_list.remove(start.roomname);
 				System.out.println("Usuwanie "+game_list.size());
-				notifyAll("startgame", start.username, start.roomname, "Game start");
+				notifyAll(JsonMessages.StartGame(), start.roomname);
 			}
 			else {
 				Game.defaultRoom.tell(new Messages.JoinGame(start.username, start.roomname), null);
@@ -166,7 +166,7 @@ public class GameRoom extends UntypedActor {
 			if(roomhost != null && roomhost.equals(leave.username)) {
 				host.remove(leave.roomname);
 				game_list.remove(leave.roomname);
-				notifyAll("leave", leave.username, leave.roomname, "has left the room");
+				notifyAll(JsonMessages.Leave(leave.username), leave.roomname);
 			}
 
 		} else if(message instanceof Messages.Talk)  {
@@ -174,7 +174,7 @@ public class GameRoom extends UntypedActor {
 			// Received a Talk message
 			Messages.Talk talk = (Messages.Talk)message;
 
-			notifyAll("talk", talk.username, players.get(talk.username), talk.text);
+			notifyAll(JsonMessages.Talk(talk.username, talk.text), players.get(talk.username));
 
 		} else if(message instanceof Messages.Quit)  {
 
@@ -190,14 +190,14 @@ public class GameRoom extends UntypedActor {
 			if(game_list.get(room) != null)
 			  game_list.get(room).numberOfPlayers--;
 
-			notifyAll("quit", quit.username, room, "has left the room");
+			notifyAll(JsonMessages.Quit(quit.username), room);
 
 		} else if(message instanceof Messages.Unknown)  {
 
 			// Received a Unknown message
 			Messages.Unknown unknown = (Messages.Unknown)message;
 			
-			sendJSON(unknown.username, "unknown", unknown.username, "unknown type: "+unknown.unknownType);
+			sendJSON(unknown.username, JsonMessages.Unknown("unknown type: "+unknown.unknownType));
 
 		} else {
 			unhandled(message);
@@ -206,14 +206,10 @@ public class GameRoom extends UntypedActor {
 	}
 
 	// Send a Json event to all members
-	public void notifyAll(String kind, String user, String room, String text) {
+	public void notifyAll(ObjectNode event, String room) {
 		for(Map.Entry<String, String> entry: players.entrySet()) {
 
 			if(entry.getValue().equals(room)) {
-				ObjectNode event = Json.newObject();
-				event.put("type", kind);
-				event.put("user", user);
-				event.put("message", text);
 
 				ArrayNode m = event.putArray("members");
 				for(String u: members.keySet()) {
@@ -246,12 +242,7 @@ public class GameRoom extends UntypedActor {
 	}
 	
 	// Send a Json event to given member
-	public void sendJSON(String username, String kind, String user, String text) {
-
-		ObjectNode event = Json.newObject();
-		event.put("type", kind);
-		event.put("user", user);
-		event.put("message", text);
+	public void sendJSON(String username, ObjectNode event) {
 
 		ArrayNode m = event.putArray("members");
 		for(String u: members.keySet()) {

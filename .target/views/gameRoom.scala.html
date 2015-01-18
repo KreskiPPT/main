@@ -1,4 +1,4 @@
-@(username: String)(roomname: String)
+@(username: String)(roomname: String)(host: String)
 
 @main(username) {
     
@@ -25,18 +25,22 @@
         </div>
     </div>
 	
+	@if(host == username) {
+	
 	<form action="@routes.Application.game()" class="pull-right">
-	  <button id="join" class="join" type="submit">Play</button><br />
+	  <button id="play" class="play" type="submit">Play</button><br />
 	</form>
+	
+	}
 	
 	<br />
 	
-	<form action="@routes.Application.reChatRoom()" class="pull-right">
+	<form action="@routes.Application.reLobby()" class="pull-right">
 	  <button id="leave" class="leave" type="submit">Leave</button><br />
 	</form>
 	
 	<button id="configuration" class="configuration" type="submit">ConfRoom</button><br />
     
-    <script type="text/javascript" charset="utf-8" src="@routes.Application.gameRoomJs(username)"></script>
+    <script type="text/javascript" charset="utf-8" src="@routes.Application.gameRoomJs(username, host)"></script>
     
 }

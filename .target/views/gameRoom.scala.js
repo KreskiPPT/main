@@ -1,4 +1,4 @@
-@(username: String)
+@(username: String)(host: String)
 
 $(function() {
     var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
@@ -18,7 +18,7 @@ $(function() {
 	
 	function sendToSocket(type) {
 		chatSocket.send(JSON.stringify(
-            {type: type, numberOfPlayers: "8" }
+            {type: type, numberOfPlayers: "8", radius: "30" }
         ))
 	}
 	
@@ -42,8 +42,8 @@ $(function() {
         // Create the message element
         var el = $('<div class="message"><span></span><p></p></div>')
         $("span", el).text(data.user)
-        $("p", el).text(data.kind+" "+data.message)
-        $(el).addClass(data.kind)
+        $("p", el).text(data.type+" "+data.message)
+        $(el).addClass(data.type)
         if(data.user == '@username') $(el).addClass('me')
         $('#messages').append(el)
 
@@ -65,7 +65,11 @@ $(function() {
 
     $("#talk").keypress(handleReturnKey)
 	
-	document.getElementById("join").addEventListener("click", closeSocket, false)
+	@if(host == username) {
+	  document.getElementById("play").addEventListener("click", closeSocket, false)
+	}
+	document.getElementById("leave").addEventListener("click", closeSocket, false)
+	
 	document.getElementById("configuration").addEventListener("click", function(){
                              var type = "configuration";
                              sendToSocket(type);
