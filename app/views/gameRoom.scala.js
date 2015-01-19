@@ -22,21 +22,26 @@ $(function() {
             $("#onChat").show()
         }
 
-        // Create the message element
-        var el = $('<div class="message"><span></span><p></p></div>')
-        $("span", el).text(data.user)
-        $("p", el).text(data.type+" "+data.message)
-        $(el).addClass(data.type)
-        if(data.user == '@username') $(el).addClass('me')
-        $('#messages').append(el)
-
-        // Update the members list
-        $("#members").html('')
-        $(data.members).each(function() {
-            var li = document.createElement('li');
-            li.textContent = this;
-            $("#members").append(li);
-        })
+        switch (data.type) {
+			case "join":
+			  receiveJoin(data);
+			break;
+			case "talk":
+			  receiveTalk(data);
+			break;
+			case "configuration":
+			  receiveConfiguration(data);
+			break;
+			case "startgame":
+			  window.location.assign("@routes.Application.game()");
+			break;
+			case "leave":
+			  receiveLeave(data);
+			break;
+			case "quit":
+			  receiveQuit(data);
+			break;
+		}
     }
 
     var handleReturnKey = function(e) {

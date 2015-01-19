@@ -44,6 +44,8 @@ public class GameRoom extends UntypedActor {
 						break;
 					case "configuration":  defaultRoom.tell(new Messages.GameConfiguration(username, event.get("numberOfPlayers").asInt(), event.get("numberOfPlayers").asDouble()), null);
 					break;
+					  case "play":  defaultRoom.tell(new Messages.StartGame(username, null), null);
+          break;
 					default:
 						defaultRoom.tell(new Messages.Unknown(username, event.get("type").asText()), null);
 						break;
@@ -135,26 +137,39 @@ public class GameRoom extends UntypedActor {
 			// Received a StartGame message
 			Messages.StartGame start = (Messages.StartGame)message;
 
-			System.out.println("StartGame");
+			System.out.println("StartGame ");
 
-			String roomhost = host.get(start.roomname);
+			String roomname = players.get(start.username);
+			String roomhost = host.get(roomname);
 
 			if(roomhost != null && roomhost.equals(start.username)) {				
 				
-				Game.game_list.put(start.roomname, new GameRoomData(start.roomname, start.username));
-				Game.collision.put(start.roomname, new Collision(game_list.get(start.roomname).radius));
-				Game.defaultRoom.tell(new Messages.CreateGame(start.username, start.roomname), null);
+				Game.game_list.put(roomname, game_list.get(roomname));
+				Game.collision.put(roomname, new Collision(game_list.get(roomname).radius));
+				//Game.defaultRoom.tell(new Messages.CreateGame(start.username, start.roomname), null);
 				
-				host.remove(start.roomname);
-				game_list.remove(start.roomname);
+				for(Map.Entry<String, String> entry: players.entrySet()) {
+				  Game.players.put(entry.getKey(), entry.getValue());
+				}
+				Game.host.put(start.username, roomname);
+				
+				host.remove(roomname);
+				game_list.remove(roomname);
 				System.out.println("Usuwanie "+game_list.size());
-				notifyAll(JsonMessages.StartGame(), start.roomname);
+				notifyAll(JsonMessages.StartGame(), roomname);
 			}
 			else {
-				Game.defaultRoom.tell(new Messages.JoinGame(start.username, start.roomname), null);
+				Game.defaultRoom.tell(new Messages.JoinGame(start.username, roomname), null);
 			}
 
-		} else if(message instanceof Messages.Leave)  {
+		} else if(message instanceof Messages.InitializedGame)  {
+
+      // Received a Talk message
+      Messages.InitializedGame init = (Messages.InitializedGame)message;
+
+      sendJSON(init.username, JsonMessages.Init());
+
+    } else if(message instanceof Messages.Leave)  {
 
 			// Received a Talk message
 			Messages.Leave leave = (Messages.Leave)message;

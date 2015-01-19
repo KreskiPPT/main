@@ -44,6 +44,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 
 
+
+
 import java.util.*;
 
 import models.GameRoom.GameRoomData;
@@ -74,7 +76,8 @@ public class Game extends UntypedActor {
 					switch (event.get("type").asText()) {
 					case "message":  defaultRoom.tell(new Messages.Talk(username, event.get("text").asText()), null);
 					break;
-					case "point":  defaultRoom.tell(new Messages.Point(username, event.get("x").asDouble(), event.get("y").asDouble()), null);
+					case "point":  
+					  defaultRoom.tell(new Messages.Point(username, event.get("x").asDouble(), event.get("y").asDouble(), event.get("turn").asText()), null);
 					break;
 					case "collision":
 						
@@ -100,10 +103,10 @@ public class Game extends UntypedActor {
 						if (sarrayJson.isArray()) {
 						    for (final JsonNode node : sarrayJson) {
 						    	String user = node.get("username").asText();
-								double x =  node.get("x").asDouble();
-								double y =  node.get("y").asDouble();
+								  double x =  node.get("x").asDouble();
+								  double y =  node.get("y").asDouble();
 						    	
-								splayers.put(user, new Point(x,y));
+								  splayers.put(user, new Point(x,y));
 						    }
 						}
 						
@@ -143,29 +146,14 @@ public class Game extends UntypedActor {
 
 	// Members of this room.
 	Map<String, WebSocket.Out<JsonNode>> members = new HashMap<String, WebSocket.Out<JsonNode>>();
-	Map<String, String> players = new HashMap<String, String>();
-	Map<String, String> host = new HashMap<String, String>();
+	public static Map<String, String> players = new HashMap<String, String>();
+	public static Map<String, String> host = new HashMap<String, String>();
 	public static Map<String, GameRoomData> game_list = new HashMap<String, GameRoomData>();
 	public static Map<String, Collision> collision = new HashMap<String, Collision>();
 
 	public void onReceive(Object message) throws Exception {
 
-		if(message instanceof Messages.CreateGame) {
-
-			// Received a CreateGame message
-			Messages.CreateGame create = (Messages.CreateGame)message;
-
-			players.put(create.username, create.room_name);
-			host.put(create.room_name, create.username);
-
-		} else if(message instanceof Messages.JoinGame) {
-
-			// Received a JoinGame message
-			Messages.JoinGame join = (Messages.JoinGame)message;
-
-			players.put(join.username, join.room_name);
-
-		} else if(message instanceof Messages.Join) {
+		if(message instanceof Messages.Join) {
 
 			// Received a Join message
 			Messages.Join join = (Messages.Join)message;
@@ -175,8 +163,11 @@ public class Game extends UntypedActor {
 				getSender().tell("This username is already used", getSelf());
 			} else {
 				members.put(join.username, join.channel);
+				String room = players.get(join.username);
+				
 				collision.get(players.get(join.username)).addPlayer(join.username);
 				notifyAll(JsonMessages.Join(join.username), players.get(join.username));
+				notifyAll(JsonMessages.Configuration(game_list.get(room)), room);
 				getSender().tell("OK", getSelf());
 			}
 
@@ -187,24 +178,24 @@ public class Game extends UntypedActor {
 
 			collision.get(players.get(start.username)).init(start.players);
 			
-			notifyAll(JsonMessages.StartGame(), players.get(start.username));
+			notifyAll(JsonMessages.Start(start.players), players.get(start.username));
 
 		} else if(message instanceof Messages.Point) {
 
 			// Received a Point message
 			Messages.Point point = (Messages.Point)message;
 
-			collision.get(players.get(point.username)).addPoint(new Point(point.x,point.y), point.username);
+			/*collision.get(players.get(point.username)).addPoint(new Point(point.x,point.y), point.username);
 			if(collision.get(players.get(point.username)).ifCollision(point.username))
 				notifyAll(JsonMessages.Collision(point.username), players.get(point.username));
-			else
-				notifyAll(JsonMessages.Point(point.username, point.x, point.y), players.get(point.username));
+			else*/
+				notifyAll(JsonMessages.Point(point.username, point.x, point.y, point.turn), players.get(point.username));
 
 		} else if(message instanceof Messages.Collision) {
 
 			// Received a Collision message
 			Messages.Collision coll = (Messages.Collision)message;
-			if(collision.get(players.get(coll.username)).checkCollision(coll.username, coll.players))
+			//if(collision.get(players.get(coll.username)).checkCollision(coll.username, coll.players))
 				notifyAll(JsonMessages.Collision(coll.username), players.get(coll.username));
 			
 		} else if(message instanceof Messages.Leave)  {
@@ -260,8 +251,9 @@ public class Game extends UntypedActor {
 				for(String u: members.keySet()) {
 					m.add(u);
 				}
-
-				members.get(entry.getKey()).write(event);
+				
+				if(members.get(entry.getKey()) != null)
+				  members.get(entry.getKey()).write(event);
 			}
 		}
 	}

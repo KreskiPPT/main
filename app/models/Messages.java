@@ -60,6 +60,18 @@ public class Messages {
 		}
 
 	}
+	
+	public static class InitializedGame {
+
+    final String username;
+    final String room_name;
+
+    public InitializedGame(String username, String room_name) {
+      this.username = username;
+      this.room_name = room_name;
+    }
+
+  }
 
 	public static class JoinGameRoom {
 
@@ -151,11 +163,13 @@ public class Messages {
 		final String username;
 		final double x;
 		final double y;
+		final String turn;
 
-		public Point(String username, double x, double y) {
+		public Point(String username, double x, double y, String turn) {
 			this.username = username;
 			this.x = x;
 			this.y = y;
+			this.turn = turn;
 		}
 
 	}

@@ -140,7 +140,8 @@ public class Application extends Controller {
 	public static Result game() {
 		String username = session("username");
 		String roomname = session("roomname");
-		GameRoom.defaultRoom.tell(new Messages.StartGame(username, roomname), null);
+		if(username ==  roomhost.get(roomname))
+		  GameRoom.defaultRoom.tell(new Messages.StartGame(username, roomname), null);
 
 		session("state", "game");
 		return ok(game.render(username, roomhost.get(roomname)));

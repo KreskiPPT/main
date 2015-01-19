@@ -114,19 +114,20 @@ public class Lobby extends UntypedActor {
 			Messages.Refresh refresh = (Messages.Refresh)message;
 			
 			int size = 0;
-			//ArrayList<String> games = new ArrayList<String>();
+			ArrayList<GameRoomData> data = new ArrayList<GameRoomData>();
 			String games = "";
 			
 			for(Map.Entry<String, GameRoomData> entry: GameRoom.game_list.entrySet()) {
 				if(!entry.getValue().isFull()) {
 				  games+=entry.getKey()+";";
 				  size++;
+				  data.add(entry.getValue());
 				}
 			}
 			games = size+";"+games;
 		  //String[] table = null;
 			
-			sendJSON(refresh.username, JsonMessages.Refresh(refresh.username, games));
+			sendJSON(refresh.username, JsonMessages.Refresh(refresh.username, games, data));
 
 		} else if(message instanceof Messages.Talk)  {
 
@@ -161,11 +162,6 @@ public class Lobby extends UntypedActor {
 	public void notifyAll(ObjectNode event) {
 		for(WebSocket.Out<JsonNode> channel: members.values()) {
 
-			/*ObjectNode event = Json.newObject();
-			event.put("type", kind);
-			event.put("user", user);
-			event.put("message", text);*/
-
 			ArrayNode m = event.putArray("members");
 			for(String u: members.keySet()) {
 				m.add(u);
@@ -176,11 +172,6 @@ public class Lobby extends UntypedActor {
 
 	// Send a Json to given member
 	public void sendJSON(String username, ObjectNode event) {
-
-		/*ObjectNode event = Json.newObject();
-		event.put("type", kind);
-		event.put("user", user);
-		event.put("message", text);*/
 
 		ArrayNode m = event.putArray("members");
 		for(String u: members.keySet()) {

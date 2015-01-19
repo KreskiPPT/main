@@ -21,8 +21,26 @@ $(function() {
         } else {
             $("#onChat").show()
         }
-
-        // Create the message element
+		
+		switch (data.type) {
+			case "join":
+			  receiveJoin(data);
+			break;
+			case "talk":
+			  receiveTalk(data);
+			break;
+			case "refresh":
+			  receiveRefresh(data);
+			break;
+			case "leave":
+			  receiveLeave(data);
+			break;
+			case "quit":
+			  receiveQuit(data);
+			break;
+		}
+		
+        /*// Create the message element
         var el = $('<div class="message"><span></span><p></p></div>')
         $("span", el).text(data.user)
         $("p", el).text(data.type+" "+data.message)
@@ -36,7 +54,7 @@ $(function() {
             var li = document.createElement('li');
             li.textContent = this;
             $("#members").append(li);
-        })
+        })*/
     }
 
     var handleReturnKey = function(e) {

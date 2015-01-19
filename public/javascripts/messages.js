@@ -38,7 +38,12 @@ function configurationMessage() {
 }
 
 function playMessage() {
-  chatSocket.close()
+  var json = JSON.stringify(
+    {type: "play" } //turn l - left, r - right, n - non
+  )
+  
+  sendToSocket(json)
+  //chatSocket.close()
 }
 
 function startMessage() {
@@ -68,7 +73,7 @@ function collisionMessage() {
 
 function pointMessage() {
   var json = JSON.stringify(
-    {type: "point", x: "5", y: "5" }
+    {type: "point", x: "5", y: "5", turn: "l" } //turn l - left, r - right, n - non
   )
   
   sendToSocket(json)
