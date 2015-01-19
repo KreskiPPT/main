@@ -2,27 +2,10 @@
 
 $(function() {
     var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-    var chatSocket = new WS("@routes.Application.gameRoomWS(username).webSocketURL(request)")
+    chatSocket = new WS("@routes.Application.gameRoomWS(username).webSocketURL(request)")
 
 	window.onbeforeunload = function() {
       chatSocket.onclose = function () {}; // disable onclose handler first
-      chatSocket.close()
-    };
-	
-    var sendMessage = function() {
-        chatSocket.send(JSON.stringify(
-            {type: "message", text: $("#talk").val()}
-        ))
-        $("#talk").val('')
-    }
-	
-	function sendToSocket(type) {
-		chatSocket.send(JSON.stringify(
-            {type: type, numberOfPlayers: "8", radius: "30" }
-        ))
-	}
-	
-	function closeSocket() {
       chatSocket.close()
     };
 
@@ -59,21 +42,18 @@ $(function() {
     var handleReturnKey = function(e) {
         if(e.charCode == 13 || e.keyCode == 13) {
             e.preventDefault()
-            sendMessage()
+            textMessage()
         }
     }
 
     $("#talk").keypress(handleReturnKey)
 	
 	@if(host == username) {
-	  document.getElementById("play").addEventListener("click", closeSocket, false)
+	  document.getElementById("play").addEventListener("click", playMessage, false)
 	}
-	document.getElementById("leave").addEventListener("click", closeSocket, false)
 	
-	document.getElementById("configuration").addEventListener("click", function(){
-                             var type = "configuration";
-                             sendToSocket(type);
-							}, false)
+	document.getElementById("leave").addEventListener("click", leaveMessage, false)
+	document.getElementById("configuration").addEventListener("click", configurationMessage, false)
 
     chatSocket.onmessage = receiveEvent
 

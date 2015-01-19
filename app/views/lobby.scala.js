@@ -2,29 +2,12 @@
 
 $(function() {
     var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-    var chatSocket = new WS("@routes.Application.chat(username).webSocketURL(request)")
+    chatSocket = new WS("@routes.Application.chat(username).webSocketURL(request)")
 	
 	window.onbeforeunload = function() {
       chatSocket.onclose = function () {}; // disable onclose handler first
       chatSocket.close()
     };
-	
-	function closeSocket() {
-      chatSocket.close()
-    };
-	
-	function sendToSocket(type) {
-		chatSocket.send(JSON.stringify(
-            {type: type, text: " " }
-        ))
-	}
-
-    var sendMessage = function() {
-        chatSocket.send(JSON.stringify(
-            {type: "message", text: $("#talk").val()}
-        ))
-        $("#talk").val('')
-    }
 
     var receiveEvent = function(event) {
         var data = JSON.parse(event.data)
@@ -59,16 +42,13 @@ $(function() {
     var handleReturnKey = function(e) {
         if(e.charCode == 13 || e.keyCode == 13) {
             e.preventDefault()
-            sendMessage()
+            textMessage()
         }
     }
 
     $("#talk").keypress(handleReturnKey)
-	document.getElementById("join").addEventListener("click", closeSocket, false)
-	document.getElementById("refresh").addEventListener("click", function(){
-                             var type = "refresh";
-                             sendToSocket(type);
-							}, false)
+	document.getElementById("join").addEventListener("click", joinMessage, false)
+	document.getElementById("refresh").addEventListener("click", refreshMessage, false)
 
     chatSocket.onmessage = receiveEvent
 

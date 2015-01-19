@@ -2,25 +2,10 @@
 
 $(function() {
     var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-    var chatSocket = new WS("@routes.Application.gameWS(username).webSocketURL(request)")
+    chatSocket = new WS("@routes.Application.gameWS(username).webSocketURL(request)")
 	
 	window.onbeforeunload = function() {
       chatSocket.onclose = function () {}; // disable onclose handler first
-      chatSocket.close()
-    };
-
-    var sendMessage = function() {
-        chatSocket.send(JSON.stringify(
-            {type: "message", text: $("#talk").val()}
-        ))
-        $("#talk").val('')
-    }
-	
-	function sendToSocket(json) {
-		chatSocket.send(json)
-	}
-	
-	function closeSocket() {
       chatSocket.close()
     };
 
@@ -57,46 +42,19 @@ $(function() {
     var handleReturnKey = function(e) {
         if(e.charCode == 13 || e.keyCode == 13) {
             e.preventDefault()
-            sendMessage()
+            textMessage()
         }
     }
 
     $("#talk").keypress(handleReturnKey)
 	
 	@if(host == username) {
-		document.getElementById("start").addEventListener("click", function(){
-                              var json = JSON.stringify(
-							{type: "start",
-							players:[
-    {username:"aaa", "x":"5", "y":"5"},
-    {username:"ppp", "x":"5", "y":"5"},
-    {username:"lll", "x":"5", "y":"5"},
-	{username:"mmm", "x":"5", "y":"5"}
-]							})
-                             sendToSocket(json)
-							}, false)
+		document.getElementById("start").addEventListener("click", startMessage, false)
 	}
 	
-	document.getElementById("leave").addEventListener("click", closeSocket, false)
-	document.getElementById("collision").addEventListener("click", function(){
-                             var json = JSON.stringify(
-							{type: "collision",
-							players:[
-    {username:"aaa", "x":"5", "y":"5"},
-    {username:"ppp", "x":"5", "y":"5"},
-    {username:"lll", "x":"5", "y":"5"},
-	{username:"mmm", "x":"5", "y":"5"}
-]							})
-                             sendToSocket(json)
-							}, false)
-							
-	document.getElementById("point").addEventListener("click", function(){
-                             var json = JSON.stringify(
-            {type: "point", x: "5", y: "5" }
-        )
-                             sendToSocket(json);
-							}, false)
+	document.getElementById("leave").addEventListener("click", leaveMessage, false)
+	document.getElementById("collision").addEventListener("click", collisionMessage, false)
+	document.getElementById("point").addEventListener("click", pointMessage, false)
 
     chatSocket.onmessage = receiveEvent
-
 })
