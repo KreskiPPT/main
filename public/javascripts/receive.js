@@ -12,7 +12,7 @@ function receiveTalk(data) {
   /*data.type
   data.user
   data.message*/
-  
+
   var el = $('<div class="message"><span></span><p></p></div>')
   $("span", el).text(data.user)
   $("p", el).text(data.type+" "+data.message)
@@ -27,7 +27,7 @@ function receiveJoin(data) {
   /*data.type
   data.user
   data.message*/
-  
+
   receiveTalk(data)
   updateMembers(data)
 }
@@ -36,7 +36,7 @@ function receiveQuit(data) {
   /*data.type
   data.user
   data.message*/
-  
+
   receiveTalk(data)
   updateMembers(data)
 }
@@ -45,16 +45,16 @@ function receiveLeave(data) {
   /*data.type
   data.user
   data.message*/
-  
+
   receiveTalk(data)
-  updateMembers(data)  
+  updateMembers(data)
 }
 
 function receiveStartGame(data) {
   /*data.type
   data.user
   data.message*/
-  
+
   receiveTalk(data)
 }
 
@@ -67,13 +67,13 @@ function receiveConfiguration(data) {
   data.maxNumberOfPlayers
   data.radius
   data.hostname"*/
-  
+
   var roomname = data.roomname
   var numberOfPlayers = data.numberOfPlayers
   var maxNumberOfPlayers = data.maxNumberOfPlayers
   var radius = data.radius
   var hostname = data.hostname
-  
+
   receiveTalk(data)
 }
 
@@ -88,9 +88,9 @@ function receiveRefresh(data) {
 	"radius"
 	"hostname"]
   }*/
-  
+
   receiveTalk(data)
-  
+
   $(data.rooms).each(function() {
 	var li = $('<div class="message"><span></span><p></p></div>')
 	$("span", li).text(data.user)
@@ -105,15 +105,15 @@ function receiveStart(data) {
   /*data.type
   data.user
   data.message*/
-  
+
   var startPositions = new Array(data.size)
   var i=0
-  
+
   $(data.position).each(function() {
 	startPositions[i] = [this.player, this.x, this.y]
 	i++
   })
-  
+
   receiveTalk(data)
 }
 
@@ -121,7 +121,7 @@ function receiveCollision(data) {
   /*data.type
   data.user
   data.message*/
-  
+
   receiveTalk(data)
 }
 
@@ -132,11 +132,12 @@ function receivePoint(data) {
   data.x
   data.y
   data.turn*/
-  
+
   var x = data.x
   var y = data.y
   var turn = data.turn
-  
+
+  console.log("RPoint(" + x + ", " + y + ")" + " " + turn)
   receiveTalk(data)
 }
 
@@ -144,19 +145,19 @@ function receiveUnknown(data) {
   /*data.type
   data.user
   data.message*/
-  
+
   receiveTalk(data)
 }
-  
+
 /*  public static ObjectNode Configuration(GameRoomData data) {
     ObjectNode event = Json.newObject();
     event.put("type", "configuration");
     event.put("user", "");
     event.put("message", data.numberOfPlayers+" "+data.maxNumberOfPlayers);
-    
+
     return event;
   }
-	
+
 	public static ObjectNode Refresh(String user, String data) {
 		ObjectNode event = Json.newObject();
 		event.put("type", "refresh");
@@ -169,33 +170,33 @@ function receiveUnknown(data) {
 			roomsdata.put("roomname", u);
 			m.add(roomsdata);
 		}
-		
+
 		return event;
 	}
-	
+
 	public static ObjectNode Collision(String username) {
     ObjectNode event = Json.newObject();
     event.put("type", "collision");
     event.put("user", username);
     event.put("message", "Collision");
-    
+
     return event;
   }
-	
+
 	public static ObjectNode Point(String username, double x, double y) {
     ObjectNode event = Json.newObject();
     event.put("type", "point");
     event.put("user", username);
     event.put("message", x+" "+y);
-    
+
     return event;
   }
-	
+
 	public static ObjectNode Unknown(String text) {
     ObjectNode event = Json.newObject();
     event.put("type", "unknown");
     event.put("user", "");
     event.put("message", text);
-    
+
     return event;
   }*/

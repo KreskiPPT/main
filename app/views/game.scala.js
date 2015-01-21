@@ -3,7 +3,7 @@
 $(function() {
     var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
     chatSocket = new WS("@routes.Application.gameWS(username).webSocketURL(request)")
-	
+
 	window.onbeforeunload = function() {
       chatSocket.onclose = function () {}; // disable onclose handler first
       chatSocket.close()
@@ -30,7 +30,7 @@ $(function() {
 			  receiveTalk(data);
 			break;
 			case "point":
-			  receiveStartGame(data);
+			  receivePoint(data);
 			break;
 			case "start":
 			  receiveStart(data);
@@ -58,11 +58,11 @@ $(function() {
     }
 
     $("#talk").keypress(handleReturnKey)
-	
+
 	@if(host == username) {
 		document.getElementById("start").addEventListener("click", startMessage, false)
 	}
-	
+
 	document.getElementById("leave").addEventListener("click", leaveMessage, false)
 	document.getElementById("collision").addEventListener("click", collisionMessage, false)
 	document.getElementById("point").addEventListener("click", pointMessage, false)

@@ -9,7 +9,7 @@ function textMessage() {
     {type: "message", text: $("#talk").val()}
   )
   $("#talk").val('')
-  
+
   sendToSocket(json);
 }
 
@@ -21,7 +21,7 @@ function refreshMessage() {
   var json = JSON.stringify(
     {type: "refresh" }
   )
-  
+
   sendToSocket(json)
 }
 
@@ -33,7 +33,7 @@ function configurationMessage() {
   var json = JSON.stringify(
     { type: "configuration", numberOfPlayers: "8", radius: "30" }
   )
-  
+
   sendToSocket(json)
 }
 
@@ -41,7 +41,7 @@ function playMessage() {
   var json = JSON.stringify(
     {type: "play" } //turn l - left, r - right, n - non
   )
-  
+
   sendToSocket(json)
   //chatSocket.close()
 }
@@ -67,16 +67,16 @@ function collisionMessage() {
 		{username:"lll", "x":"5", "y":"5"},
 		{username:"mmm", "x":"5", "y":"5"}]
 	})
-  
+
   sendToSocket(json)
 }
 
-function pointMessage() {
+function pointMessage(x, y, turn) {
   var json = JSON.stringify(
-    {type: "point", x: "5", y: "5", turn: "l" } //turn l - left, r - right, n - non
+    {type: "point", x: x, y: y, turn: turn} //turn l - left, r - right, n - non
   )
-  
+
   sendToSocket(json)
 }
-	
-	
+
+

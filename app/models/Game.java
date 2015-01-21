@@ -1,5 +1,6 @@
 package models;
 
+import play.Logger;
 import play.mvc.*;
 import play.libs.*;
 import play.libs.F.*;
@@ -13,6 +14,7 @@ import collsion.Point;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
 
 
 
@@ -189,6 +191,7 @@ public class Game extends UntypedActor {
 			if(collision.get(players.get(point.username)).ifCollision(point.username))
 				notifyAll(JsonMessages.Collision(point.username), players.get(point.username));
 			else*/
+			Logger.debug(String.format("%s (%s, %s) %s", point.username, point.x, point.y, point.turn));
 				notifyAll(JsonMessages.Point(point.username, point.x, point.y, point.turn), players.get(point.username));
 
 		} else if(message instanceof Messages.Collision) {
