@@ -1,6 +1,27 @@
-logs
+# general
+*~
+*.log
+tmp
+dump
+
+# Eclipse
+.settings
+.cache
+.project
+.classpath
+.scala_dependencies
+bin
+
+# SBT
+dist
+project/boot
 project/project
 project/target
+project/plugins/target
 target
-tmp
 .target
+
+# Play
+logs
+RUNNING_PID
+
