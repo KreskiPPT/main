@@ -1,6 +1,3 @@
-info1 = document.getElementById('info1');
-info2 = document.getElementById('info2');
-info3 = document.getElementById('info3');
 var Silnik = function(context, players) {
     this.intervalID = 0;
     this.drawingContext = context;
@@ -16,16 +13,18 @@ var Silnik = function(context, players) {
 
 Silnik.prototype.start = function() {
     var that = this;
-	
 	this.playerRank = [];
-	
     if (this.intervalID === 0) {
-       setInterval(function() {
+        this.intervalID = setInterval(function() {
             that.draw();
         }, 15);    
     }
 };
 
+Silnik.prototype.stop = function() {
+    clearInterval(this.intervalID);
+    this.intervalID = 0; 
+};
 
 Silnik.prototype.draw = function() {
     var player,
@@ -41,7 +40,8 @@ Silnik.prototype.draw = function() {
 		}
 		
 		var speed = Config.pixelsPerSecond * (1000 / Config.frameRate / 1000);
-		
+
+
         if(player.left==true){
         	player.angle+=0.0005;
         	deltaX=Math.cos(player.angle*(180/Math.PI))*50+player.px;
@@ -92,8 +92,7 @@ Silnik.prototype.draw = function() {
 				}
 			} 
 		
-			
-	
+
 			this.drawingContext.strokeStyle = player.color;
 			this.drawingContext.fillStyle = player.color;
 			this.drawingContext.beginPath();
@@ -122,15 +121,11 @@ Silnik.prototype.draw = function() {
 };
 
 Silnik.prototype.hitTest = function(point) {
-	
-	//Jeszcze nie działa/
-	
+
     if (point.x > Config.canvasWidth || point.y > Config.canvasHeight || point.x < 0 || point.y < 0) {
         return true;
     }	
-    	info1.innerHTML=this.drawingContext.getImageData(point.x, point.y, 1,1).data[0];
-    	info2.innerHTML=this.drawingContext.getImageData(point.x, point.y, 1,1).data[1];
-  		info3.innerHTML=this.drawingContext.getImageData(point.x, point.y, 1,1).data[3];
+    	
 
 	if (this.drawingContext.getImageData(point.x, point.y, 1,1).data[3] >100) {
 		return true;

@@ -39,6 +39,7 @@ Gra.prototype.start = function() {
 };
 
 Gra.prototype.restart = function() {
+	this.silnik.stop();
 	this.drawingContext.clearRect(0, 0, Config.canvasWidth, Config.canvasHeight);
 	this.start();
 };

@@ -10,7 +10,7 @@ MenagerGraczy.prototype.addPlayer = function(name) {
     
     newPlayer.name = name;
     newPlayer.color = this.getColor();
-    newPlayer.ID = this.gracze.length;
+    newPlayer.ID = this.gracze.length+1;
 
     return this.playerPush(newPlayer);
 };
@@ -51,17 +51,13 @@ MenagerGraczy.prototype.initializePlayers = function() {
 };
 
 
-
-
 MenagerGraczy.prototype.numberOfPlayers = function() {
     var count = 0;
-
     for (var i = 0; i < this.gracze.length; i++) {
         if (!this.gracze[i].canceled) {
             count++;
         }
     }
-
     return count;
 };
 
