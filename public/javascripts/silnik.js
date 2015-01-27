@@ -79,7 +79,7 @@ Silnik.prototype.draw = function() {
 					}
 				}
 				
-				if (count < 2) this.stop();
+				//if (count < 2) this.stop();
 					
 				this.checkForCallback(player.ID);
 				
